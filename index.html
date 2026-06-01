@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Suporte</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+</head>
+
+
+
+<body>
+
+    <button class="menu-btn" onclick="toggleMenu()">
+
+    <i class="fa-solid fa-bars"></i>
+
+</button>
+
+  <div class="sidebar active">
+
+    <h2>prostsoft</h2>
+
+<ul>
+
+    <li><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+
+    <li><i class="fa-solid fa-headset"></i> Chamados</li>
+
+    <li><i class="fa-solid fa-chart-column"></i> Relatórios</li>
+
+    <li><i class="fa-solid fa-users"></i> Técnicos</li>
+
+    <li><i class="fa-solid fa-gear"></i> Configurações</li>
+
+</ul>
+
+</div>
+
+   <div class="main">
+    
+    <div class="container">
+
+        <h1>Painel de Suporte Técnico</h1>
+
+        <div class="cards">
+
+            <div class="card">
+                <h2>Chamados Abertos</h2>
+                <p>24</p>
+            </div>
+
+            <div class="card">
+                <h2>Em Atendimento</h2>
+                <p>8</p>
+            </div>
+
+            <div class="card">
+                <h2>Finalizados</h2>
+                <p>31</p>
+            </div>
+
+            <div class="card">
+                <h2>Prioridade Alta</h2>
+                <p>5</p>
+            </div>
+
+        </div>
+
+        <div class="grafico">
+            <canvas id="graficoChamados"></canvas>
+        </div>
+<div class="tabela-chamados">
+
+    <h2>Chamados Recentes</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Assunto</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>#1542</td>
+                <td>Mercado X</td>
+                <td>Erro na nota fiscal</td>
+                <td class="alta">Alta</td>
+                <td>Em atendimento</td>
+            </tr>
+
+            <tr>
+                <td>#1543</td>
+                <td>Farmácia Y</td>
+                <td>Falha na integração</td>
+                <td class="media">Média</td>
+                <td>Aguardando retorno</td>
+            </tr>
+
+            <tr>
+                <td>#1544</td>
+                <td>Loja Z</td>
+                <td>Dúvida no relatório</td>
+                <td class="baixa">Baixa</td>
+                <td>Finalizado</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+    </div>
+
+</div>
+    <script src="script.js"></script>
+
+</body>
+</html>
