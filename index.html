@@ -4,131 +4,218 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Suporte</title>
-
     <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-
 </head>
-
-
-
 <body>
+    <button class="menu-btn" type="button" onclick="toggleMenu()" aria-label="Abrir menu">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
-    <button class="menu-btn" onclick="toggleMenu()">
+    <aside class="sidebar active">
+        <h2>ProstSoft</h2>
+        <ul>
+            <li class="active" data-tab="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+            <li data-tab="chamados"><i class="fa-solid fa-headset"></i> Chamados</li>
+            <li data-tab="relatorios"><i class="fa-solid fa-chart-column"></i> Relatórios</li>
+            <li data-tab="tecnicos"><i class="fa-solid fa-users"></i> Técnicos</li>
+            <li data-tab="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</li>
+        </ul>
+    </aside>
 
-    <i class="fa-solid fa-bars"></i>
-
-</button>
-
-  <div class="sidebar active">
-
-    <h2>prostsoft</h2>
-
-<ul>
-
-    <li><i class="fa-solid fa-chart-line"></i> Dashboard</li>
-
-    <li><i class="fa-solid fa-headset"></i> Chamados</li>
-
-    <li><i class="fa-solid fa-chart-column"></i> Relatórios</li>
-
-    <li><i class="fa-solid fa-users"></i> Técnicos</li>
-
-    <li><i class="fa-solid fa-gear"></i> Configurações</li>
-
-</ul>
-
-</div>
-
-   <div class="main">
-    
-    <div class="container">
-
-        <h1>Painel de Suporte Técnico</h1>
-
-        <div class="cards">
-
-            <div class="card">
-                <h2>Chamados Abertos</h2>
-                <p>24</p>
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <span class="eyebrow" id="subtituloPagina">Central de atendimento</span>
+                <h1 id="tituloPagina">Painel de Suporte Técnico</h1>
             </div>
-
-            <div class="card">
-                <h2>Em Atendimento</h2>
-                <p>8</p>
+            <div class="usuario">
+                <i class="fa-solid fa-user-shield"></i>
+                Administrador
             </div>
+        </header>
 
-            <div class="card">
-                <h2>Finalizados</h2>
-                <p>31</p>
-            </div>
+        <section id="dashboard" class="tab-page active">
+            <section class="cards" aria-label="Indicadores dos chamados">
+                <article class="card">
+                    <i class="fa-solid fa-headset"></i>
+                    <h2>Chamados Abertos</h2>
+                    <p id="totalAbertos">0</p>
+                </article>
 
-            <div class="card">
-                <h2>Prioridade Alta</h2>
-                <p>5</p>
-            </div>
+                <article class="card">
+                    <i class="fa-solid fa-user-clock"></i>
+                    <h2>Em Atendimento</h2>
+                    <p id="totalAtendimento">0</p>
+                </article>
 
-        </div>
+                <article class="card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <h2>Finalizados</h2>
+                    <p id="totalFinalizados">0</p>
+                </article>
 
-        <div class="grafico">
-            <canvas id="graficoChamados"></canvas>
-        </div>
-<div class="tabela-chamados">
+                <article class="card destaque">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h2>Prioridade Alta</h2>
+                    <p id="totalAlta">0</p>
+                </article>
+            </section>
 
-    <h2>Chamados Recentes</h2>
+            <section class="charts" aria-label="Gráficos de acompanhamento">
+                <div class="grafico">
+                    <div class="section-title">
+                        <h2>Chamados por setor</h2>
+                        <span>Volume atual</span>
+                    </div>
+                    <canvas id="graficoChamados"></canvas>
+                </div>
 
-    <table>
+                <div class="grafico">
+                    <div class="section-title">
+                        <h2>Prioridade dos chamados</h2>
+                        <span>Distribuição</span>
+                    </div>
+                    <canvas id="graficoPrioridade"></canvas>
+                </div>
+            </section>
 
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Assunto</th>
-                <th>Prioridade</th>
-                <th>Status</th>
-            </tr>
-        </thead>
+            <section class="painel-tabela">
+                <div class="section-title">
+                    <div>
+                        <h2>Chamados críticos</h2>
+                        <span>Itens que precisam de atenção primeiro</span>
+                    </div>
+                </div>
+                <div id="listaCriticos" class="lista-cards"></div>
+            </section>
+        </section>
 
-        <tbody>
+        <section id="chamados" class="tab-page">
+            <section class="painel-tabela">
+                <div class="section-title table-heading">
+                    <div>
+                        <h2>Chamados Recentes</h2>
+                        <span>Fila operacional do suporte</span>
+                    </div>
+                    <span id="contadorTabela" class="contador">0 chamados</span>
+                </div>
 
-            <tr>
-                <td>#1542</td>
-                <td>Mercado X</td>
-                <td>Erro na nota fiscal</td>
-                <td class="alta">Alta</td>
-                <td>Em atendimento</td>
-            </tr>
+                <div class="filtros">
+                    <label>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="pesquisa" placeholder="Pesquisar cliente ou assunto...">
+                    </label>
 
-            <tr>
-                <td>#1543</td>
-                <td>Farmácia Y</td>
-                <td>Falha na integração</td>
-                <td class="media">Média</td>
-                <td>Aguardando retorno</td>
-            </tr>
+                    <select id="filtroPrioridade" aria-label="Filtrar por prioridade">
+                        <option value="Todas">Todas as prioridades</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Média">Média</option>
+                        <option value="Baixa">Baixa</option>
+                    </select>
 
-            <tr>
-                <td>#1544</td>
-                <td>Loja Z</td>
-                <td>Dúvida no relatório</td>
-                <td class="baixa">Baixa</td>
-                <td>Finalizado</td>
-            </tr>
+                    <select id="filtroStatus" aria-label="Filtrar por status">
+                        <option value="Todos">Todos os status</option>
+                        <option value="Aberto">Aberto</option>
+                        <option value="Em atendimento">Em atendimento</option>
+                        <option value="Aguardando retorno">Aguardando retorno</option>
+                        <option value="Finalizado">Finalizado</option>
+                    </select>
+                </div>
 
-        </tbody>
+                <div class="tabela-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Assunto</th>
+                                <th>Setor</th>
+                                <th>Prioridade</th>
+                                <th>Status</th>
+                                <th>Técnico</th>
+                                <th>SLA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoChamados"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
 
-    </table>
+        <section id="relatorios" class="tab-page">
+            <section class="cards resumo-relatorio">
+                <article class="card">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <h2>Total no período</h2>
+                    <p id="relatorioTotal">0</p>
+                </article>
+                <article class="card destaque">
+                    <i class="fa-solid fa-clock"></i>
+                    <h2>SLA atrasado</h2>
+                    <p id="relatorioAtrasados">0</p>
+                </article>
+                <article class="card">
+                    <i class="fa-solid fa-building"></i>
+                    <h2>Setor mais acionado</h2>
+                    <p id="relatorioSetor">-</p>
+                </article>
+            </section>
 
-</div>
-    </div>
+            <section class="painel-tabela">
+                <div class="section-title">
+                    <div>
+                        <h2>Resumo por técnico</h2>
+                        <span>Quantidade de chamados distribuídos na equipe</span>
+                    </div>
+                </div>
+                <div id="resumoTecnicos" class="lista-cards"></div>
+            </section>
+        </section>
 
-</div>
+        <section id="tecnicos" class="tab-page">
+            <section class="painel-tabela">
+                <div class="section-title">
+                    <div>
+                        <h2>Equipe técnica</h2>
+                        <span>Acompanhamento de disponibilidade e carga de atendimento</span>
+                    </div>
+                </div>
+                <div id="cardsTecnicos" class="tecnicos-grid"></div>
+            </section>
+        </section>
+
+        <section id="configuracoes" class="tab-page">
+            <section class="config-grid">
+                <article class="config-card">
+                    <h2>Dados do painel</h2>
+                    <label>Nome da empresa</label>
+                    <input type="text" value="ProstSoft">
+                    <label>Nome do painel</label>
+                    <input type="text" value="Painel de Suporte Técnico">
+                </article>
+
+                <article class="config-card">
+                    <h2>Regras de SLA</h2>
+                    <div class="config-row"><span>Alta prioridade</span><strong>2 horas</strong></div>
+                    <div class="config-row"><span>Média prioridade</span><strong>6 horas</strong></div>
+                    <div class="config-row"><span>Baixa prioridade</span><strong>24 horas</strong></div>
+                </article>
+
+                <article class="config-card">
+                    <h2>Setores monitorados</h2>
+                    <div class="tags">
+                        <span>Financeiro</span>
+                        <span>Fiscal</span>
+                        <span>Vendas</span>
+                        <span>Estoque</span>
+                    </div>
+                </article>
+            </section>
+        </section>
+    </main>
+
     <script src="script.js"></script>
-
 </body>
 </html>
