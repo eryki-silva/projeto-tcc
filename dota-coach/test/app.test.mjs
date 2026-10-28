@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { accountId, matchId, buildEvidence, createService, validateAnalysis } from '../lib.mjs';
+import { accountId, matchId, buildEvidence, createService, validateAnalysis, connectionError } from '../lib.mjs';
 import { createApp } from '../server.mjs';
 
 const match = {
@@ -19,6 +19,15 @@ const validAnalysis = {
   training_plan: ['Registrar last hits aos dez minutos.'], patch_context: 'Catálogo comunitário; meta agregado.', limitations: ['Posição contínua indisponível.']
 };
 const jsonResponse = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { 'Content-Type': 'application/json' } });
+test('diagnóstico distingue DNS, certificado, timeout e interrupção sem expor erros ou chaves', () => {
+  for (const [code, expected] of [['ENOTFOUND', /DNS/], ['UNABLE_TO_GET_ISSUER_CERT_LOCALLY', /certificado TLS/], ['UND_ERR_CONNECT_TIMEOUT', /Tempo limite/], ['ECONNRESET', /interrompida/], ['ECONNREFUSED', /recusada/]]) {
+    const result = connectionError('api.openai.com', { cause: { code, message: 'secret-do-not-print' } });
+    assert.match(result.message, expected); assert(!result.message.includes('secret-do-not-print'));
+  }
+  assert.equal(connectionError('api.openai.com', { name: 'TimeoutError' }).status, 504);
+  assert.match(connectionError('api.openai.com', { cause: { errors: [{ code: 'ETIMEDOUT' }] } }).message, /Tempo limite/);
+  assert(!connectionError('api.openai.com', { code: 'secret-do-not-print' }).message.includes('secret-do-not-print'));
+});
 function fixture({ key = true, mutateResponse, failMeta = false } = {}) {
   const calls = [];
   const fetcher = async (url, options) => {

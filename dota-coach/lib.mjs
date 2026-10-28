@@ -2,6 +2,20 @@ export class AppError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
 }
 
+export function connectionError(host, error) {
+  const codes = [error?.code, error?.cause?.code, ...(error?.cause?.errors ?? []).map(e => e?.code)];
+  const hints = [
+    [['ENOTFOUND', 'EAI_AGAIN'], 'Falha ao resolver o endereço (DNS). Confira a conexão e a configuração de DNS.'],
+    [['CERT_HAS_EXPIRED', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'SELF_SIGNED_CERT_IN_CHAIN', 'ERR_TLS_CERT_ALTNAME_INVALID'], 'Falha de certificado TLS. Confira data/hora do Windows e a configuração de certificados da rede ou do antivírus. Não desative a verificação TLS.'],
+    [['UND_ERR_CONNECT_TIMEOUT', 'ETIMEDOUT'], 'Tempo limite ao estabelecer conexão. Verifique conectividade e as regras de firewall ou proxy para este destino.'],
+    [['ECONNRESET', 'UND_ERR_SOCKET'], 'A conexão foi interrompida. Verifique a rede, o proxy e as regras de segurança para este destino.'],
+    [['ECONNREFUSED'], 'A conexão foi recusada pelo destino ou pelo proxy configurado.']
+  ];
+  if (error?.name === 'TimeoutError' || error?.name === 'AbortError') return new AppError(`A solicitação a ${host} excedeu o tempo limite. O serviço pode estar lento; confirme a conexão antes de tentar novamente.`, 504);
+  for (const [known, hint] of hints) if (codes.some(code => known.includes(code))) return new AppError(`Não foi possível acessar ${host}. ${hint}`, 502);
+  return new AppError(`Não foi possível acessar ${host}. Falha de transporte; confirme a conexão usando curl.exe ou consulte o diagnóstico de rede.`, 502);
+}
+
 export function matchId(value) {
   if (!/^[1-9]\d{5,11}$/.test(String(value ?? ''))) throw new AppError('Informe um ID de partida válido (6 a 12 dígitos).');
   return String(value);
@@ -104,7 +118,7 @@ export function createService({ fetcher = fetch, env = process.env, now = () => 
   async function request(url, options = {}) {
     let response;
     try { response = await fetcher(url, { ...options, signal: AbortSignal.timeout(options.timeout ?? 25000) }); }
-    catch { throw new AppError(`Não foi possível acessar ${new URL(url).hostname}. Verifique a rede ou tente novamente.`, 502); }
+    catch (error) { throw connectionError(new URL(url).hostname, error); }
     if (!response.ok) {
       const host = new URL(url).hostname;
       if (response.status === 429) throw new AppError(`Limite de uso em ${host}. Aguarde ou verifique créditos/cota da API.`, 429);
