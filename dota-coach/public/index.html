@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ancient · Dota Replay Coach</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="Ancient início"><span class="brand-icon">A</span> ANCIENT<span class="brand-tag">DOTA COACH</span></a><span class="local-badge"><i></i> Análise individual</span></header>
+  <main>
+    <section class="hero"><p class="eyebrow">DO REPLAY À PRÓXIMA VITÓRIA</p><h1>Entenda suas decisões.<br><span>Evolua a cada partida.</span></h1><p class="intro">Seu herói. Seus timings. Suas oportunidades.<br>Transforme os dados da partida em um plano de treino com IA.</p><div class="hero-decoration" aria-hidden="true"><div class="rune">A</div><span>REVIEW · ADAPT · CLIMB</span></div></section>
+    <div class="workspace">
+      <aside>
+        <section class="panel input-panel"><div class="section-heading"><span class="step">01</span><h2>Carregue sua partida</h2></div>
+          <form id="match-form"><label for="match-id">ID da partida</label><input id="match-id" name="match" inputmode="numeric" pattern="[1-9][0-9]{5,11}" placeholder="Ex.: 8123456789" required autocomplete="off"><p class="hint">Dota 2 → Histórico → Detalhes da partida.</p>
+            <label for="hero-name">Herói para analisar <span>opcional</span></label><input id="hero-name" maxlength="100" placeholder="Ex.: Invoker, Anti-Mage, Axe" autocomplete="off"><p class="hint">Para analisar qualquer jogador. O herói tem prioridade sobre o perfil abaixo.</p>
+            <label for="account-id">SteamID64 ou ID OpenDota <span>opcional</span></label><input id="account-id" value="76561198093225343" placeholder="SteamID64, ID ou link do perfil" autocomplete="off"><p class="hint">Sem herói informado, tentaremos identificar este perfil. Você pode trocar ou apagar.</p><button class="primary" id="load-button" type="submit">Buscar partida <span>↗</span></button>
+          </form><p id="key-status" class="status-small">Verificando configuração…</p>
+        </section>
+        <section class="panel source-panel"><p class="eyebrow">COMO FUNCIONA</p><ol><li><b>Dados reais</b><span>Estatísticas e eventos processados pelo OpenDota.</span></li><li><b>Contexto do jogo</b><span>Patch da partida, catálogo de versões, notícias e meta agregado.</span></li><li><b>Feedback com evidências</b><span>O que foi observado, o que é hipótese e o que treinar.</span></li></ol><div class="note">Um ID não revela todas as ações. A precisão depende dos dados públicos e da disponibilidade do replay.</div></section>
+      </aside>
+      <div class="main-column">
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        <section id="empty-state" class="panel empty-state"><div class="replay-symbol" aria-hidden="true">▷</div><p class="eyebrow">SUA PRÓXIMA EVOLUÇÃO COMEÇA AQUI</p><h2>Uma partida. Novas perspectivas.</h2><p>Busque uma partida e escolha seu jogador.<br>O coach conecta seus números às decisões que merecem revisão.</p><div class="feature-tags"><span>Economia</span><span>Combate</span><span>Itens</span><span>Mapa</span><span>Objetivos</span></div><div class="empty-grid"><div><b>01</b><span>Identifique padrões</span></div><div><b>02</b><span>Revise com contexto</span></div><div><b>03</b><span>Treine com propósito</span></div></div></section>
+        <section id="match-panel" class="panel" hidden><div class="section-heading"><span class="step">02</span><h2>Escolha seu jogador</h2><button id="reload-button" class="text-button" type="button">Atualizar</button></div><div id="match-info" class="match-info"></div><div id="players" class="players"></div><div class="parse-row"><span id="parse-status"></span><button id="parse-button" class="secondary" type="button">Solicitar processamento do replay</button></div><label for="focus">O que você quer melhorar? <span>opcional</span></label><textarea id="focus" maxlength="600" rows="2" placeholder="Ex.: Perco muito farm depois da fase de rotas. Quero revisar meus timings de itens."></textarea><label class="consent"><input type="checkbox" id="consent"> <span>Autorizo enviar os dados da partida e meu foco à OpenAI. A análise consome a cota da chave configurada no servidor.</span></label><button id="analyze-button" class="primary" type="button" disabled>Gerar análise com IA <span>✦</span></button><p class="hint">Sem chave no navegador. Sem respostas simuladas. O processamento pode levar até 2 minutos.</p></section>
+        <section id="report" hidden aria-label="Relatório de análise"></section>
+      </div>
+    </div>
+    <footer>ANCIENT · COACH DE REPLAY <span>Projeto independente. Sem afiliação com Valve, OpenDota ou OpenAI.</span></footer>
+  </main>
+</body>
+</html>
