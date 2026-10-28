@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { accountId, matchId, buildEvidence, createService, validateAnalysis, connectionError } from '../lib.mjs';
+import { accountId, matchId, buildEvidence, createService, validateAnalysis, connectionError, openaiKey } from '../lib.mjs';
 import { createApp } from '../server.mjs';
 
 const match = {
@@ -19,6 +19,23 @@ const validAnalysis = {
   training_plan: ['Registrar last hits aos dez minutos.'], patch_context: 'Catálogo comunitário; meta agregado.', limitations: ['Posição contínua indisponível.']
 };
 const jsonResponse = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { 'Content-Type': 'application/json' } });
+test('normaliza somente espaços externos e rejeita credenciais com caracteres inválidos sem expor o valor', () => {
+  assert.equal(openaiKey({ DOTA_OPENAI_API_KEY: '  test-key\r\n' }), 'test-key');
+  for (const key of ['test\nsecret', 'test secret', 'test-•']) assert.throws(() => openaiKey({ DOTA_OPENAI_API_KEY: key }), error => error.status === 400 && !error.message.includes(key));
+  assert.throws(() => openaiKey({ DOTA_OPENAI_API_KEY: '   ' }), error => error.status === 503);
+  const error = connectionError('api.openai.com', { message: 'Headers: invalid header value Bearer sensitive-value' });
+  assert.equal(error.status, 400); assert(!error.message.includes('sensitive-value'));
+});
+test('teste OpenAI usa POST sem modelo nem entrada para não gerar conteúdo', async () => {
+  let call;
+  const service = createService({ env: { DOTA_OPENAI_API_KEY: 'test-key' }, fetcher: async (url, options) => { call = { url, options }; return jsonResponse({}, 400); } });
+  assert.equal((await service.checkOpenai()).ok, true);
+  assert.equal(call.options.method, 'POST'); assert.equal(call.options.body, '{}');
+  for (const status of [401, 403, 429]) {
+    const failed = createService({ env: { DOTA_OPENAI_API_KEY: 'test-key' }, fetcher: async () => jsonResponse({}, status) });
+    await assert.rejects(() => failed.checkOpenai(), error => error.status === status);
+  }
+});
 test('diagnóstico distingue DNS, certificado, timeout e interrupção sem expor erros ou chaves', () => {
   for (const [code, expected] of [['ENOTFOUND', /DNS/], ['UNABLE_TO_GET_ISSUER_CERT_LOCALLY', /certificado TLS/], ['UND_ERR_CONNECT_TIMEOUT', /Tempo limite/], ['ECONNRESET', /interrompida/], ['ECONNREFUSED', /recusada/]]) {
     const result = connectionError('api.openai.com', { cause: { code, message: 'secret-do-not-print' } });

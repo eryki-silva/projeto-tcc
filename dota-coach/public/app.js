@@ -122,6 +122,15 @@ function renderReport(report) {
 }
 
 $('match-form').addEventListener('submit', loadMatch);
+$('check-openai').addEventListener('click', async () => {
+  $('check-openai').disabled = true;
+  $('connection-status').textContent = 'Testando o POST à OpenAI com a configuração do servidor, sem gerar conteúdo…';
+  try {
+    const result = await api('/api/openai/check', { method: 'POST', body: '{}' });
+    $('connection-status').textContent = result.message;
+  } catch (error) { $('connection-status').textContent = errorMessage(error); }
+  finally { $('check-openai').disabled = false; }
+});
 $('reload-button').addEventListener('click', () => loadMatch());
 $('consent').addEventListener('change', () => setBusy(false));
 $('parse-button').addEventListener('click', async () => {

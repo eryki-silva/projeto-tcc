@@ -38,6 +38,14 @@ export function createApp(service = createService()) {
         res.writeHead(200, { ...headers, 'Content-Type': type }); res.end(data); return;
       }
       if (req.method === 'GET' && url.pathname === '/api/health') return json({ ok: true, openai_configured: service.configured() });
+      if (req.method === 'POST' && url.pathname === '/api/openai/check') {
+        await body(req);
+        const bucket = `${req.socket.remoteAddress}:openai-check`;
+        const previous = limits.get(bucket);
+        if (previous && Date.now() < previous.reset) throw new AppError('Aguarde 30 segundos antes de repetir o teste.', 429);
+        limits.set(bucket, { reset: Date.now() + 30000 });
+        return json(await service.checkOpenai());
+      }
       const route = url.pathname.match(/^\/api\/matches\/(\d+)(?:\/(parse|analyze))?$/);
       if (!route) throw new AppError('Rota não encontrada.', 404);
       const id = matchId(route[1]), action = route[2];
