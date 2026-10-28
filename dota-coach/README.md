@@ -6,6 +6,8 @@ Aplicação local para consultar partidas de Dota 2 pelo ID e receber um relató
 
 **Windows:** extraia o ZIP e abra `INICIAR-WINDOWS.cmd`. Com Node.js 24.5+ instalado, ele solicita a chave de forma oculta (se não houver configuração existente), inicia o servidor e abre o navegador. A chave digitada fica apenas na memória do processo, sem gravar `.env`; ela será solicitada novamente na próxima execução. O lançador Windows precisa ser executado no seu próprio computador e não foi testado neste ambiente Linux.
 
+O iniciador verifica instalações compatíveis no PATH e nos diretórios comuns do instalador oficial, NVM e Volta. Se o Windows ainda estiver usando o PATH anterior à instalação, ele tenta usar o executável encontrado diretamente. Se continuar sem localizar sua instalação, abra um **novo PowerShell**, execute `node -v` e `where.exe node` e confira qual versão/caminho está ativo. Uma instalação fora desses diretórios pode precisar ser adicionada ao PATH.
+
 Requer **Node.js 24.5 ou mais recente**. Não há pacotes externos ou etapa de build.
 
 ```sh
